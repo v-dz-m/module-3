@@ -16,6 +16,8 @@ int gameCells[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 int freeCells = CELL_AMOUNT;
 bool isUserFirst = true;
 int aiFirstCounter = 0;
+int userScore = 0;
+int aiScore = 0;
 
 void resetCells();
 void printMenu();
@@ -71,6 +73,7 @@ void resetCells()
 void printMenu()
 {
     cout << endl;
+    cout << "Current score: AI = " << aiScore << ", user = " << userScore << endl;
     cout << "Who goes first?" << endl;
     cout << "1: User" << endl;
     cout << "2: AI" << endl;
@@ -80,15 +83,13 @@ void printMenu()
 
 void printField()
 {
-    cout << endl << "—————————————    —————————————";
-    cout << endl;
+    cout << endl << "—————————————    —————————————" << endl;
     for (int i = 0; i < LINE_LENGTH; i++) {
         printDigitRow(i);
         cout << "   ";
         printGameRow(i);
         cout << endl;
-        cout << "—————————————    —————————————";
-        cout << endl;
+        cout << "—————————————    —————————————" << endl;
     }
 }
 
@@ -216,9 +217,11 @@ void printWin(int current)
     printField();
     if (current == USER_MARK) {
         cout << endl << "User wins!" << endl;
+        userScore += 3;
     }
     else {
         cout << endl << "AI wins!" << endl;
+        aiScore += 3;
     }
 }
 
@@ -229,6 +232,8 @@ bool isDraw()
     }
     printField();
     cout << endl << "This is a draw!" << endl;
+    userScore++;
+    aiScore++;
 
     return true;
 }
@@ -247,7 +252,7 @@ int secondAIMove()
         return MIDDLE_CELL_INDEX;               // if the middle cell is empty, take it
     }
 
-    return rand() % 4 * 2;                      // otherwise take a random corner cell (1, 3, 5, 7)
+    return (rand() % 4) * 2;                      // otherwise take a random corner cell (1, 3, 5, 7)
 }
 
 int thirdAIMove()
@@ -257,9 +262,9 @@ int thirdAIMove()
     }
 
     while (true) {
-        int randomNumber = rand() % 4 * 2;
+        int randomNumber = (rand() % 4) * 2;
         if (gameCells[randomNumber] == 0) {
-            return randomNumber;
+            return randomNumber;                // take an empty (random) corner cell
         }
     }
 }
@@ -270,7 +275,7 @@ int forthAIMove()
         for (int j = i + 2; j < CELL_AMOUNT; j += 2) {
             int first = gameCells[i];
             int second = gameCells[j];
-            if (first == USER_MARK && second == USER_MARK) {    // check: are two even cells taken by player?
+            if (first == USER_MARK && second == USER_MARK) {    // check: are two even cells taken by user?
                 return i + j - 4;                               // if so, take closer corner cell
             }
         }
