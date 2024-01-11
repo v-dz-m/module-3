@@ -250,6 +250,11 @@ int getBestLineCell(int current)
 
 int repelAIMove()
 {
+    int bestCell = getBestLineCell(-1);
+    if (bestCell > -1) {
+        return bestCell;
+    }
+
     return randomAIMove();
 }
 
