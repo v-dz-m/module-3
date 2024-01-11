@@ -7,10 +7,8 @@ const int CELL_AMOUNT = 9;
 const int LINE_LENGTH = 3;
 const int MIDDLE_CELL_INDEX = 4;
 const int WIN_LINES = 8;
-const int BEST_LINES = 24;
 
 const int WIN_LINE_INDEXES[WIN_LINES][LINE_LENGTH] = { {0, 1, 2}, {3, 4, 5}, {6, 7, 8}, {0, 3, 6}, {1, 4, 7}, {2, 5, 8}, {0, 4, 8}, {2, 4, 6} };
-const int BEST_LINE_INDEXES[BEST_LINES][LINE_LENGTH] = { {0, 1, 2}, {3, 4, 5}, {6, 7, 8}, {0, 3, 6}, {1, 4, 7}, {2, 5, 8}, {0, 4, 8}, {2, 4, 6}, {0, 2, 1}, {3, 5, 4}, {6, 8, 7}, {0, 6, 3}, {1, 7, 4}, {2, 8, 5}, {0, 8, 4}, {2, 6, 4}, {1, 2, 0}, {4, 5, 3}, {7, 8, 6}, {3, 6, 0}, {4, 7, 1}, {5, 8, 2}, {4, 8, 0}, {4, 6, 2} };
 
 int gameCells[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 int freeCells = CELL_AMOUNT;
@@ -291,9 +289,15 @@ int bestAIMove()
 
 int getBestLineCell(int current)
 {
-    for (int i = 0; i < BEST_LINES; i++) {
-        if (gameCells[BEST_LINE_INDEXES[i][0]] == current && gameCells[BEST_LINE_INDEXES[i][1]] == current && gameCells[BEST_LINE_INDEXES[i][2]] == 0) {
-            return BEST_LINE_INDEXES[i][2];
+    for (int i = 0; i < WIN_LINES; i++) {
+        if (gameCells[WIN_LINE_INDEXES[i][0]] == current && gameCells[WIN_LINE_INDEXES[i][1]] == current && gameCells[WIN_LINE_INDEXES[i][2]] == 0) {
+            return WIN_LINE_INDEXES[i][2];
+        }
+        if (gameCells[WIN_LINE_INDEXES[i][0]] == current && gameCells[WIN_LINE_INDEXES[i][2]] == current && gameCells[WIN_LINE_INDEXES[i][1]] == 0) {
+            return WIN_LINE_INDEXES[i][1];
+        }
+        if (gameCells[WIN_LINE_INDEXES[i][1]] == current && gameCells[WIN_LINE_INDEXES[i][2]] == current && gameCells[WIN_LINE_INDEXES[i][0]] == 0) {
+            return WIN_LINE_INDEXES[i][0];
         }
     }
 
