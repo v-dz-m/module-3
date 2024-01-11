@@ -108,6 +108,10 @@ void userMove()
     while (true) {
         cout << endl << "Please, select an empty cell for your move: ";
         cin >> number;
+        if (number <= 0 || number > CELL_AMOUNT) {
+            cout << "Your number is not a cell number, try again...";
+            continue;
+        }
         if (gameCells[number - 1] == 0) {
             gameCells[number - 1] = -1;
             break;
@@ -129,12 +133,24 @@ void aiMove()
 {
     printField();
     if (freeCells < CELL_AMOUNT) {
-        while (true) {
-            int randomNumber = rand() % CELL_AMOUNT;
-            if (gameCells[randomNumber] == 0) {
-                cout << endl << "AI move: " << (randomNumber + 1) << endl;
-                gameCells[randomNumber] = 1;
-                break;
+        // after-move if user goes first
+        if (freeCells == CELL_AMOUNT - 1) {
+            if (gameCells[4] == 0) {
+                gameCells[4] = 1;               // if the middle cell is empty take it
+            }
+            else {
+                int randomNumber = (rand() % 4) * 2;
+                gameCells[randomNumber] = 1;    // otherwise take a random corner cell
+            }
+        }
+        else {
+            while (true) {
+                int randomNumber = rand() % CELL_AMOUNT;
+                if (gameCells[randomNumber] == 0) {
+                    cout << endl << "AI move: " << (randomNumber + 1) << endl;
+                    gameCells[randomNumber] = 1;
+                    break;
+                }
             }
         }
         freeCells--;
