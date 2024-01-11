@@ -5,10 +5,11 @@ using namespace std;
 const int FIRST_AI_MOVES[] = { 4, 2, 6 };
 const int CELL_AMOUNT = 9;
 const int LINE_LENGTH = 3;
-
+const int MIDDLE_CELL_INDEX = 4;
 const int WIN_LINES = 8;
-const int WIN_LINE_INDEXES[WIN_LINES][LINE_LENGTH] = { {0, 1, 2}, {3, 4, 5}, {6, 7, 8}, {0, 3, 6}, {1, 4, 7}, {2, 5, 8}, {0, 4, 8}, {2, 4, 6} };
 const int BEST_LINES = 24;
+
+const int WIN_LINE_INDEXES[WIN_LINES][LINE_LENGTH] = { {0, 1, 2}, {3, 4, 5}, {6, 7, 8}, {0, 3, 6}, {1, 4, 7}, {2, 5, 8}, {0, 4, 8}, {2, 4, 6} };
 const int BEST_LINE_INDEXES[BEST_LINES][LINE_LENGTH] = { {0, 1, 2}, {3, 4, 5}, {6, 7, 8}, {0, 3, 6}, {1, 4, 7}, {2, 5, 8}, {0, 4, 8}, {2, 4, 6}, {0, 2, 1}, {3, 5, 4}, {6, 8, 7}, {0, 6, 3}, {1, 7, 4}, {2, 8, 5}, {0, 8, 4}, {2, 6, 4}, {1, 2, 0}, {4, 5, 3}, {7, 8, 6}, {3, 6, 0}, {4, 7, 1}, {5, 8, 2}, {4, 8, 0}, {4, 6, 2} };
 
 int gameCells[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -22,12 +23,16 @@ void printField();
 void printDigitRow(int rowNumber);
 void printGameRow(int rowNumber);
 void userMove();
+int getUserMove();
 void aiMove();
+int getAIMove();
 bool isWin(int current);
 void printWin(int current);
 bool isDraw();
 int firstAIMove();
 int secondAIMove();
+int thirdAIMove();
+int forthAIMove();
 int bestAIMove();
 int getBestLineCell(int current);
 int repelAIMove();
@@ -115,8 +120,22 @@ void printDigitRow(int rowNumber)
 
 void userMove()
 {
-    int number = 0;
     printField();
+    int number = getUserMove();
+    freeCells--;
+    if (isWin(-1)) {
+        return;
+    }
+    if (isDraw()) {
+        return;
+    }
+
+    aiMove();
+}
+
+int getUserMove()
+{
+    int number = 0;
     while (true) {
         cout << endl << "Please, select an empty cell for your move: ";
         cin >> number;
@@ -130,30 +149,15 @@ void userMove()
         }
         cout << "This cell is taken, try again..." << endl;
     }
-    freeCells--;
-    if (isWin(-1)) {
-        return;
-    }
-    if (isDraw()) {
-        return;
-    }
 
-    aiMove();
+    return number;
 }
 
 void aiMove()
 {
     int move = -1;
     printField();
-    if (freeCells == CELL_AMOUNT) {
-        move = firstAIMove();
-    }
-    else if (freeCells == CELL_AMOUNT - 1) {
-        move = secondAIMove();
-    }
-    else {
-        move = bestAIMove();
-    }
+    move = getAIMove();
     gameCells[move] = 1;
 
     cout << endl << "AI move: " << (move + 1) << endl;
@@ -166,6 +170,25 @@ void aiMove()
         return;
     }
     userMove();
+}
+
+int getAIMove()
+{
+    if (freeCells == CELL_AMOUNT) {
+        return firstAIMove();
+    }
+    if (freeCells == CELL_AMOUNT - 1) {
+        return secondAIMove();
+    }
+    else if (freeCells == CELL_AMOUNT - 2) {
+        return thirdAIMove();
+    }
+    else if (freeCells == CELL_AMOUNT - 3) {
+        return forthAIMove();
+    }
+    else {
+        return bestAIMove();
+    }
 }
 
 bool isWin(int current)
@@ -220,11 +243,40 @@ int firstAIMove()
 
 int secondAIMove()
 {
-    if (gameCells[4] == 0) {
-        return 4;               // if the middle cell is empty take it
+    if (gameCells[MIDDLE_CELL_INDEX] == 0) {
+        return MIDDLE_CELL_INDEX;               // if the middle cell is empty, take it
     }
 
-    return (rand() % 4) * 2;    // otherwise take a random corner cell
+    return rand() % 4 * 2;                      // otherwise take a random corner cell (1, 3, 5, 7)
+}
+
+int thirdAIMove()
+{
+    if (gameCells[MIDDLE_CELL_INDEX] == 0) {
+        return MIDDLE_CELL_INDEX;
+    }
+
+    while (true) {
+        int randomNumber = rand() % 4 * 2;
+        if (gameCells[randomNumber] == 0) {
+            return randomNumber;
+        }
+    }
+}
+
+int forthAIMove()
+{
+    for (int i = 1; i < CELL_AMOUNT - 2; i += 2) {
+        for (int j = i + 2; j < CELL_AMOUNT; j += 2) {
+            int first = gameCells[i];
+            int second = gameCells[j];
+            if (first == -1 && second == -1) {  // check: are two even cells taken by player?
+                return i + j - 4;               // if so, take closer corner cell
+            }
+        }
+    }
+
+    return repelAIMove();
 }
 
 int bestAIMove()
