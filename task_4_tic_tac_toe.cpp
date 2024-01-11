@@ -7,6 +7,8 @@ const int CELL_AMOUNT = 9;
 const int LINE_LENGTH = 3;
 const int MIDDLE_CELL_INDEX = 4;
 const int WIN_LINES = 8;
+const int USER_MARK = 2;
+const int AI_MARK = 1;
 
 const int WIN_LINE_INDEXES[WIN_LINES][LINE_LENGTH] = { {0, 1, 2}, {3, 4, 5}, {6, 7, 8}, {0, 3, 6}, {1, 4, 7}, {2, 5, 8}, {0, 4, 8}, {2, 4, 6} };
 
@@ -95,10 +97,10 @@ void printGameRow(int rowNumber)
     cout << "| ";
     for (int i = 0; i < LINE_LENGTH; i++) {
         int currentCell = gameCells[rowNumber * LINE_LENGTH + i];
-        if (currentCell == -1) {
+        if (currentCell == USER_MARK) {
             cout << (isUserFirst ? "X" : "O");
         }
-        else if (currentCell == 1) {
+        else if (currentCell == AI_MARK) {
             cout << (isUserFirst ? "O" : "X");
         }
         else {
@@ -121,7 +123,7 @@ void userMove()
     printField();
     int number = getUserMove();
     freeCells--;
-    if (isWin(-1)) {
+    if (isWin(USER_MARK)) {
         return;
     }
     if (isDraw()) {
@@ -142,7 +144,7 @@ int getUserMove()
             continue;
         }
         if (gameCells[number - 1] == 0) {
-            gameCells[number - 1] = -1;
+            gameCells[number - 1] = USER_MARK;
             break;
         }
         cout << "This cell is taken, try again..." << endl;
@@ -156,12 +158,12 @@ void aiMove()
     int move = -1;
     printField();
     move = getAIMove();
-    gameCells[move] = 1;
+    gameCells[move] = AI_MARK;
 
     cout << endl << "AI move: " << (move + 1) << endl;
 
     freeCells--;
-    if (isWin(1)) {
+    if (isWin(AI_MARK)) {
         return;
     }
     if (isDraw()) {
@@ -212,7 +214,7 @@ bool isWin(int current)
 void printWin(int current)
 {
     printField();
-    if (current == -1) {
+    if (current == USER_MARK) {
         cout << endl << "User wins!" << endl;
     }
     else {
@@ -268,8 +270,8 @@ int forthAIMove()
         for (int j = i + 2; j < CELL_AMOUNT; j += 2) {
             int first = gameCells[i];
             int second = gameCells[j];
-            if (first == -1 && second == -1) {  // check: are two even cells taken by player?
-                return i + j - 4;               // if so, take closer corner cell
+            if (first == USER_MARK && second == USER_MARK) {    // check: are two even cells taken by player?
+                return i + j - 4;                               // if so, take closer corner cell
             }
         }
     }
@@ -279,7 +281,7 @@ int forthAIMove()
 
 int bestAIMove()
 {
-    int bestCell = getBestLineCell(1);
+    int bestCell = getBestLineCell(AI_MARK);
     if (bestCell > -1) {
         return bestCell;
     }
@@ -306,7 +308,7 @@ int getBestLineCell(int current)
 
 int repelAIMove()
 {
-    int bestCell = getBestLineCell(-1);
+    int bestCell = getBestLineCell(USER_MARK);
     if (bestCell > -1) {
         return bestCell;
     }
