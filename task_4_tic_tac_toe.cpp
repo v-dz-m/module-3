@@ -42,6 +42,7 @@ int randomAIMove();
 
 int main()
 {
+    cout << endl << "Module 3, task 4." << endl << "AI BATTLE. Develop an artificial intelligence for Tic-Tac-Toe game cup" << endl;
     int choice = 0;
     while (true) {
         printMenu();
@@ -83,19 +84,19 @@ void printMenu()
 
 void printField()
 {
-    cout << endl << "—————————————    —————————————" << endl;
+    cout << endl << "+++++++++++++    +++++++++++++" << endl;
     for (int i = 0; i < LINE_LENGTH; i++) {
         printDigitRow(i);
         cout << "   ";
         printGameRow(i);
         cout << endl;
-        cout << "—————————————    —————————————" << endl;
+        cout << "+++++++++++++    +++++++++++++" << endl;
     }
 }
 
 void printGameRow(int rowNumber)
 {
-    cout << "| ";
+    cout << "+ ";
     for (int i = 0; i < LINE_LENGTH; i++) {
         int currentCell = gameCells[rowNumber * LINE_LENGTH + i];
         if (currentCell == USER_MARK) {
@@ -107,15 +108,15 @@ void printGameRow(int rowNumber)
         else {
             cout << " ";
         }
-        cout << " | ";
+        cout << " + ";
     }
 }
 
 void printDigitRow(int rowNumber)
 {
-    cout << "| ";
+    cout << "+ ";
     for (int i = 0; i < LINE_LENGTH; i++) {
-        cout << (rowNumber * LINE_LENGTH + i + 1) << " | ";
+        cout << (rowNumber * LINE_LENGTH + i + 1) << " + ";
     }
 }
 
